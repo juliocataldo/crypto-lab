@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🔐 Cripto Lab — Desafios de Criptografia</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            color: white;
+            margin-bottom: 40px;
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        header h1 {
+            font-size: 3em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+
+        .intro {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            animation: slideUp 0.6s ease-out;
+        }
+
+        .intro h2 {
+            color: #667eea;
+            margin-bottom: 15px;
+        }
+
+        .intro p {
+            line-height: 1.6;
+            margin-bottom: 10px;
+        }
+
+        .challenges {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .challenge {
+            background: white;
+            border-left: 5px solid #667eea;
+            padding: 25px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            animation: slideUp 0.6s ease-out backwards;
+        }
+
+        .challenge:nth-child(1) { animation-delay: 0.1s; }
+        .challenge:nth-child(2) { animation-delay: 0.2s; }
+        .challenge:nth-child(3) { animation-delay: 0.3s; }
+        .challenge:nth-child(4) { animation-delay: 0.4s; }
+        .challenge:nth-child(5) { animation-delay: 0.5s; }
+
+        .challenge:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 12px rgba(0,0,0,0.15);
+        }
+
+        .challenge.easy { border-left-color: #48bb78; }
+        .challenge.medium { border-left-color: #f6ad55; }
+        .challenge.hard { border-left-color: #fc8181; }
+        .challenge.expert { border-left-color: #b794f6; }
+        .challenge.master { border-left-color: #38b2ac; }
+
+        .challenge-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .difficulty {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 0.9em;
+            font-weight: bold;
+            margin-right: 10px;
+            color: white;
+        }
+
+        .difficulty.easy { background: #48bb78; }
+        .difficulty.medium { background: #f6ad55; }
+        .difficulty.hard { background: #fc8181; }
+        .difficulty.expert { background: #b794f6; }
+        .difficulty.master { background: #38b2ac; }
+
+        .challenge h3 {
+            color: #2d3748;
+            font-size: 1.4em;
+        }
+
+        .challenge-type {
+            color: #718096;
+            font-size: 0.9em;
+            margin-top: 5px;
+            font-style: italic;
+        }
+
+        .challenge-description {
+            color: #4a5568;
+            line-height: 1.6;
+            margin: 15px 0;
+        }
+
+        .challenge-time {
+            color: #a0aec0;
+            font-size: 0.9em;
+            margin: 10px 0;
+        }
+
+        .downloads {
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid #e2e8f0;
+        }
+
+        .download-btn {
+            display: inline-block;
+            background: #667eea;
+            color: white;
+            padding: 8px 15px;
+            border-radius: 4px;
+            text-decoration: none;
+            font-size: 0.9em;
+            margin-right: 10px;
+            margin-top: 5px;
+            transition: background 0.3s ease;
+        }
+
+        .download-btn:hover {
+            background: #764ba2;
+        }
+
+        .commands {
+            background: #f7fafc;
+            padding: 12px;
+            border-radius: 4px;
+            margin-top: 10px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.85em;
+            overflow-x: auto;
+            color: #2d3748;
+            border-left: 3px solid #cbd5e0;
+        }
+
+        footer {
+            text-align: center;
+            color: white;
+            padding: 20px;
+            margin-top: 40px;
+            font-size: 0.9em;
+        }
+
+        .objectives {
+            background: rgba(255,255,255,0.1);
+            color: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+            backdrop-filter: blur(10px);
+        }
+
+        .objectives h2 {
+            margin-bottom: 15px;
+        }
+
+        .objectives-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+
+        .objective-item {
+            background: rgba(255,255,255,0.2);
+            padding: 15px;
+            border-radius: 6px;
+            border-left: 3px solid white;
+        }
+
+        .objective-item strong {
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @media (max-width: 768px) {
+            header h1 {
+                font-size: 2em;
+            }
+
+            .challenges {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🔐 Cripto Lab</h1>
+            <p>Desafios de Hash, Criptografia Simétrica e Assimétrica</p>
+        </header>
+
+        <div class="objectives">
+            <h2>🎯 Objetivos (60 minutos)</h2>
+            <div class="objectives-grid">
+                <div class="objective-item">
+                    <strong>1. Hash (10 min)</strong>
+                    Quebre MD5 com rainbow tables
+                </div>
+                <div class="objective-item">
+                    <strong>2. Hash + Salt (10 min)</strong>
+                    Force SHA-256 com dicionário
+                </div>
+                <div class="objective-item">
+                    <strong>3. AES-256 (15 min)</strong>
+                    Descriptografe com OpenSSL
+                </div>
+                <div class="objective-item">
+                    <strong>4. RSA (15 min)</strong>
+                    Fatore e reconstrua chave privada
+                </div>
+                <div class="objective-item">
+                    <strong>5. Hybrid (10 min)</strong>
+                    Crie sistema com 3 camadas
+                </div>
+            </div>
+        </div>
+
+        <div class="intro">
+            <h2>📖 Introdução</h2>
+            <p>
+                Bem-vindo ao <strong>Cripto Lab</strong>! Um laboratório prático de criptografia onde você
+                explorará três paradigmas fundamentais da segurança moderna:
+            </p>
+            <ul style="margin-left: 20px; margin-top: 10px; line-height: 1.8;">
+                <li><strong>Hash:</strong> Funções one-way para integridade e autenticação</li>
+                <li><strong>Criptografia Simétrica:</strong> Chave compartilhada para confidencialidade rápida</li>
+                <li><strong>Criptografia Assimétrica:</strong> Chaves públicas para trocar segredos</li>
+            </ul>
+            <p style="margin-top: 15px;">
+                Cada desafio progride em dificuldade e emula ataques reais. Estude bem — em produção, a criptografia é sua linha de defesa!
+            </p>
+        </div>
+
+        <div class="challenges">
+            <!-- EASY CHALLENGE -->
+            <div class="challenge easy">
+                <div class="challenge-header">
+                    <span class="difficulty easy">Easy</span>
+                    <h3>Desafio 1: Hash MD5</h3>
+                </div>
+                <div class="challenge-type">Tipo: Hash inseguro</div>
+                <div class="challenge-description">
+                    Um hash MD5 foi fornecido. Sua missão: encontre o plaintext original usando rainbow tables ou força bruta.
+                </div>
+                <div class="challenge-time">⏱️ 10 minutos</div>
+                <div class="downloads">
+                    <strong>Arquivos:</strong>
+                    <a href="challenges/hash_md5.txt" class="download-btn" download>📥 hash_md5.txt</a>
+                </div>
+                <div class="commands">
+$ hashcat -m 0 hashes.txt rockyou.txt
+                </div>
+            </div>
+
+            <!-- MEDIUM CHALLENGE -->
+            <div class="challenge medium">
+                <div class="challenge-header">
+                    <span class="difficulty medium">Medium</span>
+                    <h3>Desafio 2: SHA-256 + Salt</h3>
+                </div>
+                <div class="challenge-type">Tipo: Hash com salt</div>
+                <div class="challenge-description">
+                    Hash SHA-256 com salt. Seu desafio: quebrar usando força bruta contra um dicionário de senhas comuns.
+                </div>
+                <div class="challenge-time">⏱️ 10 minutos</div>
+                <div class="downloads">
+                    <strong>Arquivos:</strong>
+                    <a href="challenges/hash_sha256_salt.txt" class="download-btn" download>📥 hash_sha256_salt.txt</a>
+                </div>
+                <div class="commands">
+$ cat hash_sha256_salt.txt
+$ echo -n "abc123xyzsenha1" | sha256sum
+                </div>
+            </div>
+
+            <!-- HARD CHALLENGE -->
+            <div class="challenge hard">
+                <div class="challenge-header">
+                    <span class="difficulty hard">Hard</span>
+                    <h3>Desafio 3: AES-256-CBC</h3>
+                </div>
+                <div class="challenge-type">Tipo: Criptografia Simétrica</div>
+                <div class="challenge-description">
+                    Arquivo binário encriptado com AES-256-CBC. Seu desafio: descriptografar usando OpenSSL com a chave correta.
+                </div>
+                <div class="challenge-time">⏱️ 15 minutos</div>
+                <div class="downloads">
+                    <strong>Arquivos:</strong>
+                    <a href="challenges/criptografado.bin" class="download-btn" download>📥 criptografado.bin</a>
+                </div>
+                <div class="commands">
+$ openssl enc -aes-256-cbc -d -in criptografado.bin \
+  -K $(echo -n "chave_32_bytes" | xxd -p) -iv 0
+                </div>
+            </div>
+
+            <!-- EXPERT CHALLENGE -->
+            <div class="challenge expert">
+                <div class="challenge-header">
+                    <span class="difficulty expert">Expert</span>
+                    <h3>Desafio 4: RSA Pequeno</h3>
+                </div>
+                <div class="challenge-type">Tipo: Criptografia Assimétrica</div>
+                <div class="challenge-description">
+                    Chave RSA pequena (propositalmente fraca). Seu desafio: fatore N, reconstrua a chave privada e descriptografe.
+                </div>
+                <div class="challenge-time">⏱️ 15 minutos</div>
+                <div class="downloads">
+                    <strong>Arquivos:</strong>
+                    <a href="challenges/numeros_rsa.txt" class="download-btn" download>📥 numeros_rsa.txt</a><br>
+                    <a href="challenges/mensagem_encriptada.txt" class="download-btn" download>📥 mensagem_encriptada.txt</a><br>
+                    <a href="challenges/chave_publica.pem" class="download-btn" download>📥 chave_publica.pem</a>
+                </div>
+                <div class="commands">
+$ python3 gera_chave_privada.py --N &lt;N&gt; --e 65537
+$ openssl rsautl -decrypt -in msg.txt -inkey priv.pem
+                </div>
+            </div>
+
+            <!-- MASTER CHALLENGE -->
+            <div class="challenge master">
+                <div class="challenge-header">
+                    <span class="difficulty master">Master</span>
+                    <h3>Desafio 5: Sistema Hybrid</h3>
+                </div>
+                <div class="challenge-type">Tipo: Defesa em Profundidade</div>
+                <div class="challenge-description">
+                    Seu desafio final: criar sistema seguro com 3 camadas (Hash + AES + RSA). Proteja uma mensagem para um colega.
+                </div>
+                <div class="challenge-time">⏱️ 10 minutos</div>
+                <div class="downloads">
+                    <strong>Objetivo:</strong> Implementar exemplo real de criptografia em camadas, como PGP/TLS
+                </div>
+                <div class="commands">
+$ openssl genrsa -out chave_privada.pem 2048
+$ openssl rand -hex 32 > chave_aes.hex
+$ openssl enc -aes-256-cbc -in msg.txt -out msg.aes -K $(cat chave_aes.hex) -iv 0
+                </div>
+            </div>
+        </div>
+
+        <div class="intro">
+            <h2>🛠️ Ferramentas Disponíveis</h2>
+            <p>
+                Todas as ferramentas já estão instaladas no container:
+            </p>
+            <ul style="margin-left: 20px; margin-top: 10px; line-height: 1.8;">
+                <li><code>openssl</code> — Encriptação, certificados, chaves</li>
+                <li><code>hashcat</code> — Quebra de hashes (GPU-optimized)</li>
+                <li><code>john</code> — Quebra de senhas (CPU-friendly)</li>
+                <li><code>python3 + pycryptodome</code> — Scripts customizados</li>
+                <li><code>gpg</code> — Encriptação PGP</li>
+                <li><code>xxd</code> — Análise hexadecimal</li>
+            </ul>
+        </div>
+
+        <footer>
+            <p>🎓 Cripto Lab | FIAP Cybersecurity Hacker Mindset | 2026</p>
+            <p>Desenvolvido para fins educacionais. Use responsavelmente.</p>
+        </footer>
+    </div>
+</body>
+</html>

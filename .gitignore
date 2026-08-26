@@ -1,0 +1,23 @@
+﻿# Scripts de geração (internal only)
+gera_*.py
+gera_desafios/
+
+# Respostas e gabaritos
+Desafio-02/challenges/*/GABARITO*
+Desafio-02/challenges/*/respostas/
+
+# Ambiente
+.env
+.env.local
+*.log
+*.pyc
+__pycache__/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+
+# OS
+.DS_Store
+Thumbs.db

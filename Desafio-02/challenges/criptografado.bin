@@ -1,0 +1,3 @@
+[ARQUIVO BINÁRIO ENCRIPTADO AES-256-CBC]
+Execute: python3 gera_desafios.py
+para gerar arquivos reais de teste

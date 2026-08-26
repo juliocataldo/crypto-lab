@@ -1,0 +1,11 @@
+===============================================
+DESAFIO 2: SHA-256 com Salt (Medium)
+===============================================
+
+Salt (FORNECIDO):
+abc123xyz
+
+Hash SHA-256:
+8ca46e5c0d5d2e9b4f2f7d8a6c1b3e5a7f9c2d4e6f8a0b1c3d5e7f9a1b3c5
+
+Use força bruta contra dicionário!

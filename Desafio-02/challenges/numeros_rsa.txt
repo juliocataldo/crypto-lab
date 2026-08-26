@@ -1,0 +1,14 @@
+===============================================
+DESAFIO 4: RSA Pequeno (Expert)
+===============================================
+
+Parâmetros RSA:
+N = 3233
+e = 65537
+
+Seu desafio: Fatore N em p*q!
+
+Dica: N = p * q, onde p e q são primos pequenos
+Tente divisores até √3233 ≈ 57
+
+Use o script: python3 gera_chave_privada.py --N 3233 --e 65537 --p <p> --q <q>
