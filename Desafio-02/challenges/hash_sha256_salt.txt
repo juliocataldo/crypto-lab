@@ -2,10 +2,19 @@
 DESAFIO 2: SHA-256 com Salt (Medium)
 ===============================================
 
-Salt (FORNECIDO):
+Salt (fornecido):
 abc123xyz
 
-Hash SHA-256:
-8ca46e5c0d5d2e9b4f2f7d8a6c1b3e5a7f9c2d4e6f8a0b1c3d5e7f9a1b3c5
+Hash SHA-256 de sha256(salt + senha):
+c701b165cb08f8d2d9bb77f07b40883fd72b013a31d1c1dadc49b1f4733dedf9
 
-Use força bruta contra dicionário!
+100% offline — sem precisar de internet (bash puro, testa cada candidata da wordlist):
+  HASH_ALVO="<cole o hash acima>"
+  for w in $(cat wordlist_comum.txt); do
+    [ "$(echo -n "abc123xyz$w" | sha256sum | cut -d" " -f1)" = "$HASH_ALVO" ] && echo "ACHOU: $w"
+  done
+
+Verificacao manual de uma candidata:
+  echo -n "abc123xyz<candidata>" | sha256sum
+
+A flag e FLAG{<senha_original>}

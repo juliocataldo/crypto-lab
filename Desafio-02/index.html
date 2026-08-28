@@ -3,421 +3,629 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🔐 Cripto Lab — Desafios de Criptografia</title>
+    <title>Cripto Lab — CTF</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
+        :root {
+            --bg: #0a0e14;
+            --bg-panel: #111722;
+            --bg-card: #141b28;
+            --border: #223047;
+            --text: #c9d6e3;
+            --text-dim: #6b7d94;
+            --accent: #39ff9d;
+            --accent-dim: #1f8f5c;
+            --mono: 'Fira Code', 'Cascadia Code', 'Consolas', 'SFMono-Regular', Menlo, Monaco, monospace;
+
+            --easy: #39ff9d;
+            --medium: #ffcc4d;
+            --hard: #ff6b6b;
+            --expert: #b98bff;
+            --master: #4dd8ff;
         }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: var(--mono);
+            background: var(--bg);
+            background-image:
+                radial-gradient(circle at 15% 0%, rgba(57,255,157,0.06), transparent 40%),
+                radial-gradient(circle at 85% 20%, rgba(77,216,255,0.05), transparent 40%);
+            color: var(--text);
             min-height: 100vh;
-            padding: 20px;
-            color: #333;
+            padding: 24px 16px 60px;
+            line-height: 1.5;
         }
 
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
+        .container { max-width: 1100px; margin: 0 auto; }
+
+        /* Terminal window chrome */
+        .term {
+            background: var(--bg-panel);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            margin-bottom: 24px;
+            overflow: hidden;
         }
 
-        header {
-            text-align: center;
-            color: white;
-            margin-bottom: 40px;
-            animation: fadeIn 0.5s ease-in;
+        .term-bar {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 14px;
+            background: #0d1420;
+            border-bottom: 1px solid var(--border);
         }
+
+        .dot { width: 11px; height: 11px; border-radius: 50%; }
+        .dot.red { background: #ff5f56; }
+        .dot.yellow { background: #ffbd2e; }
+        .dot.green { background: #27c93f; }
+
+        .term-title {
+            margin-left: 8px;
+            color: var(--text-dim);
+            font-size: 0.8em;
+        }
+
+        .term-body { padding: 24px 28px; }
 
         header h1 {
-            font-size: 3em;
-            margin-bottom: 10px;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            font-size: 2.1em;
+            color: var(--text);
+            letter-spacing: 0.5px;
         }
 
-        header p {
-            font-size: 1.2em;
-            opacity: 0.9;
+        header h1 .prompt { color: var(--accent); }
+        header h1 .cursor {
+            display: inline-block;
+            width: 10px; height: 1.1em;
+            background: var(--accent);
+            margin-left: 6px;
+            animation: blink 1s steps(2) infinite;
+            vertical-align: text-bottom;
         }
 
-        .intro {
-            background: white;
-            padding: 30px;
-            border-radius: 10px;
-            margin-bottom: 30px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            animation: slideUp 0.6s ease-out;
+        @keyframes blink { 50% { opacity: 0; } }
+
+        header p.sub {
+            color: var(--text-dim);
+            margin-top: 8px;
         }
 
-        .intro h2 {
-            color: #667eea;
-            margin-bottom: 15px;
+        /* Progress bar */
+        .progress-wrap {
+            margin-top: 20px;
         }
 
-        .intro p {
-            line-height: 1.6;
-            margin-bottom: 10px;
+        .progress-label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.85em;
+            color: var(--text-dim);
+            margin-bottom: 6px;
         }
 
+        .progress-label span.score { color: var(--accent); }
+
+        .progress-track {
+            height: 8px;
+            background: #0d1420;
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, var(--accent-dim), var(--accent));
+            transition: width 0.4s ease;
+        }
+
+        /* Objectives grid */
+        .objectives-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 12px;
+            margin-top: 18px;
+        }
+
+        .obj-item {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-left: 3px solid var(--text-dim);
+            border-radius: 6px;
+            padding: 12px 14px;
+            font-size: 0.85em;
+        }
+
+        .obj-item strong { display: block; color: var(--text); margin-bottom: 4px; }
+        .obj-item span { color: var(--text-dim); }
+
+        /* Challenge cards */
         .challenges {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 20px;
-            margin-bottom: 30px;
+            grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+            gap: 18px;
+            margin-bottom: 24px;
         }
 
         .challenge {
-            background: white;
-            border-left: 5px solid #667eea;
-            padding: 25px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
             border-radius: 8px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-            animation: slideUp 0.6s ease-out backwards;
+            padding: 20px;
+            position: relative;
+            transition: border-color 0.2s ease, transform 0.2s ease;
         }
 
-        .challenge:nth-child(1) { animation-delay: 0.1s; }
-        .challenge:nth-child(2) { animation-delay: 0.2s; }
-        .challenge:nth-child(3) { animation-delay: 0.3s; }
-        .challenge:nth-child(4) { animation-delay: 0.4s; }
-        .challenge:nth-child(5) { animation-delay: 0.5s; }
+        .challenge:hover { transform: translateY(-2px); }
 
-        .challenge:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 12px rgba(0,0,0,0.15);
-        }
-
-        .challenge.easy { border-left-color: #48bb78; }
-        .challenge.medium { border-left-color: #f6ad55; }
-        .challenge.hard { border-left-color: #fc8181; }
-        .challenge.expert { border-left-color: #b794f6; }
-        .challenge.master { border-left-color: #38b2ac; }
+        .challenge.solved { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent) inset; }
 
         .challenge-header {
             display: flex;
             align-items: center;
-            margin-bottom: 15px;
+            justify-content: space-between;
+            margin-bottom: 12px;
         }
+
+        .challenge-title { display: flex; align-items: center; gap: 10px; }
+
+        .lock-icon { font-size: 1.1em; }
+
+        .challenge h3 { color: var(--text); font-size: 1.05em; font-weight: 600; }
+
+        .badge-row { display: flex; align-items: center; gap: 8px; }
 
         .difficulty {
-            display: inline-block;
-            padding: 5px 10px;
-            border-radius: 4px;
-            font-size: 0.9em;
-            font-weight: bold;
-            margin-right: 10px;
-            color: white;
+            font-size: 0.72em;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            padding: 3px 8px;
+            border-radius: 3px;
+            border: 1px solid currentColor;
         }
 
-        .difficulty.easy { background: #48bb78; }
-        .difficulty.medium { background: #f6ad55; }
-        .difficulty.hard { background: #fc8181; }
-        .difficulty.expert { background: #b794f6; }
-        .difficulty.master { background: #38b2ac; }
-
-        .challenge h3 {
-            color: #2d3748;
-            font-size: 1.4em;
+        .points {
+            font-size: 0.75em;
+            color: var(--text-dim);
         }
+
+        .challenge.easy .difficulty { color: var(--easy); }
+        .challenge.medium .difficulty { color: var(--medium); }
+        .challenge.hard .difficulty { color: var(--hard); }
+        .challenge.expert .difficulty { color: var(--expert); }
+        .challenge.master .difficulty { color: var(--master); }
+
+        .challenge.easy { border-top: 2px solid var(--easy); }
+        .challenge.medium { border-top: 2px solid var(--medium); }
+        .challenge.hard { border-top: 2px solid var(--hard); }
+        .challenge.expert { border-top: 2px solid var(--expert); }
+        .challenge.master { border-top: 2px solid var(--master); }
 
         .challenge-type {
-            color: #718096;
-            font-size: 0.9em;
-            margin-top: 5px;
+            color: var(--text-dim);
+            font-size: 0.8em;
             font-style: italic;
+            margin-bottom: 10px;
         }
 
         .challenge-description {
-            color: #4a5568;
-            line-height: 1.6;
-            margin: 15px 0;
-        }
-
-        .challenge-time {
-            color: #a0aec0;
+            color: var(--text);
+            opacity: 0.9;
             font-size: 0.9em;
-            margin: 10px 0;
+            margin-bottom: 14px;
         }
 
-        .downloads {
-            margin-top: 15px;
-            padding-top: 15px;
-            border-top: 1px solid #e2e8f0;
-        }
+        .downloads { margin-bottom: 12px; }
 
         .download-btn {
             display: inline-block;
-            background: #667eea;
-            color: white;
-            padding: 8px 15px;
+            background: transparent;
+            color: var(--accent);
+            border: 1px solid var(--accent-dim);
+            padding: 5px 10px;
             border-radius: 4px;
             text-decoration: none;
-            font-size: 0.9em;
-            margin-right: 10px;
-            margin-top: 5px;
-            transition: background 0.3s ease;
+            font-size: 0.78em;
+            margin-right: 6px;
+            margin-bottom: 6px;
+            transition: background 0.2s ease, color 0.2s ease;
         }
 
-        .download-btn:hover {
-            background: #764ba2;
-        }
+        .download-btn:hover { background: var(--accent); color: #04140c; }
 
         .commands {
-            background: #f7fafc;
-            padding: 12px;
+            background: #0a1119;
+            border: 1px solid var(--border);
             border-radius: 4px;
-            margin-top: 10px;
-            font-family: 'Courier New', monospace;
-            font-size: 0.85em;
+            padding: 10px 12px;
+            margin-bottom: 14px;
+            font-size: 0.78em;
             overflow-x: auto;
-            color: #2d3748;
-            border-left: 3px solid #cbd5e0;
+            color: #8fb4d6;
+            white-space: pre;
+        }
+
+        .commands .c-prompt { color: var(--accent); }
+
+        .flag-form {
+            display: flex;
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        .flag-input {
+            flex: 1;
+            background: #0a1119;
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            padding: 9px 10px;
+            color: var(--text);
+            font-family: var(--mono);
+            font-size: 0.85em;
+        }
+
+        .flag-input:focus { outline: none; border-color: var(--accent-dim); }
+
+        .flag-submit {
+            background: var(--accent-dim);
+            color: #04140c;
+            border: none;
+            border-radius: 4px;
+            padding: 0 16px;
+            font-family: var(--mono);
+            font-weight: 700;
+            cursor: pointer;
+            font-size: 0.85em;
+        }
+
+        .flag-submit:hover { background: var(--accent); }
+
+        .flag-feedback {
+            margin-top: 8px;
+            font-size: 0.82em;
+            min-height: 1.2em;
+        }
+
+        .flag-feedback.ok { color: var(--accent); }
+        .flag-feedback.err { color: var(--hard); }
+
+        .solved-banner {
+            margin-top: 8px;
+            font-size: 0.85em;
+            color: var(--accent);
+            font-weight: 700;
+        }
+
+        /* Master checklist (no fixed flag) */
+        .checklist { margin-top: 10px; font-size: 0.85em; }
+        .checklist label { display: flex; align-items: flex-start; gap: 8px; margin-bottom: 8px; cursor: pointer; color: var(--text); }
+        .checklist input[type="checkbox"] { margin-top: 3px; accent-color: var(--master); }
+
+        code {
+            background: #0a1119;
+            border: 1px solid var(--border);
+            border-radius: 3px;
+            padding: 1px 5px;
+            color: var(--accent);
+            font-size: 0.9em;
         }
 
         footer {
             text-align: center;
-            color: white;
+            color: var(--text-dim);
             padding: 20px;
-            margin-top: 40px;
-            font-size: 0.9em;
+            font-size: 0.8em;
         }
 
-        .objectives {
-            background: rgba(255,255,255,0.1);
-            color: white;
-            padding: 20px;
-            border-radius: 8px;
-            margin-bottom: 30px;
-            backdrop-filter: blur(10px);
-        }
-
-        .objectives h2 {
-            margin-bottom: 15px;
-        }
-
-        .objectives-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 15px;
-        }
-
-        .objective-item {
-            background: rgba(255,255,255,0.2);
-            padding: 15px;
-            border-radius: 6px;
-            border-left: 3px solid white;
-        }
-
-        .objective-item strong {
-            display: block;
-            margin-bottom: 5px;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-
-        @keyframes slideUp {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        @media (max-width: 768px) {
-            header h1 {
-                font-size: 2em;
-            }
-
-            .challenges {
-                grid-template-columns: 1fr;
-            }
+        @media (max-width: 640px) {
+            .term-body { padding: 18px 16px; }
+            header h1 { font-size: 1.5em; }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <header>
-            <h1>🔐 Cripto Lab</h1>
-            <p>Desafios de Hash, Criptografia Simétrica e Assimétrica</p>
-        </header>
+        <div class="term">
+            <div class="term-bar">
+                <span class="dot red"></span><span class="dot yellow"></span><span class="dot green"></span>
+                <span class="term-title">student@cripto-lab:~$</span>
+            </div>
+            <div class="term-body">
+                <header>
+                    <h1><span class="prompt">$</span> cripto-lab --start<span class="cursor"></span></h1>
+                    <p class="sub">Capture 4 flags resolvendo hash, AES e RSA. O Desafio 5 é uma implementação livre, sem flag fixa.</p>
+                </header>
 
-        <div class="objectives">
-            <h2>🎯 Objetivos (60 minutos)</h2>
-            <div class="objectives-grid">
-                <div class="objective-item">
-                    <strong>1. Hash (10 min)</strong>
-                    Quebre MD5 com rainbow tables
+                <div class="progress-wrap">
+                    <div class="progress-label">
+                        <span>Progresso</span>
+                        <span><span class="score" id="score-count">0</span>/4 flags — <span class="score" id="points-count">0</span> pts</span>
+                    </div>
+                    <div class="progress-track"><div class="progress-fill" id="progress-fill"></div></div>
                 </div>
-                <div class="objective-item">
-                    <strong>2. Hash + Salt (10 min)</strong>
-                    Force SHA-256 com dicionário
-                </div>
-                <div class="objective-item">
-                    <strong>3. AES-256 (15 min)</strong>
-                    Descriptografe com OpenSSL
-                </div>
-                <div class="objective-item">
-                    <strong>4. RSA (15 min)</strong>
-                    Fatore e reconstrua chave privada
-                </div>
-                <div class="objective-item">
-                    <strong>5. Hybrid (10 min)</strong>
-                    Crie sistema com 3 camadas
+
+                <div class="objectives-grid">
+                    <div class="obj-item"><strong>1. Hash MD5</strong><span>10 min · rainbow table</span></div>
+                    <div class="obj-item"><strong>2. SHA-256+Salt</strong><span>10 min · força bruta</span></div>
+                    <div class="obj-item"><strong>3. AES-256-CBC</strong><span>15 min · openssl</span></div>
+                    <div class="obj-item"><strong>4. RSA pequeno</strong><span>15 min · fatoração</span></div>
+                    <div class="obj-item"><strong>5. Sistema próprio</strong><span>10 min · hash+AES+RSA</span></div>
                 </div>
             </div>
-        </div>
-
-        <div class="intro">
-            <h2>📖 Introdução</h2>
-            <p>
-                Bem-vindo ao <strong>Cripto Lab</strong>! Um laboratório prático de criptografia onde você
-                explorará três paradigmas fundamentais da segurança moderna:
-            </p>
-            <ul style="margin-left: 20px; margin-top: 10px; line-height: 1.8;">
-                <li><strong>Hash:</strong> Funções one-way para integridade e autenticação</li>
-                <li><strong>Criptografia Simétrica:</strong> Chave compartilhada para confidencialidade rápida</li>
-                <li><strong>Criptografia Assimétrica:</strong> Chaves públicas para trocar segredos</li>
-            </ul>
-            <p style="margin-top: 15px;">
-                Cada desafio progride em dificuldade e emula ataques reais. Estude bem — em produção, a criptografia é sua linha de defesa!
-            </p>
         </div>
 
         <div class="challenges">
-            <!-- EASY CHALLENGE -->
-            <div class="challenge easy">
+            <!-- EASY -->
+            <div class="challenge easy" data-id="d1">
                 <div class="challenge-header">
-                    <span class="difficulty easy">Easy</span>
-                    <h3>Desafio 1: Hash MD5</h3>
+                    <div class="challenge-title">
+                        <span class="lock-icon">🔒</span>
+                        <h3>Desafio 1 — Hash MD5</h3>
+                    </div>
+                    <div class="badge-row">
+                        <span class="difficulty">Easy</span>
+                        <span class="points">50 pts</span>
+                    </div>
                 </div>
-                <div class="challenge-type">Tipo: Hash inseguro</div>
+                <div class="challenge-type">Hash inseguro</div>
                 <div class="challenge-description">
-                    Um hash MD5 foi fornecido. Sua missão: encontre o plaintext original usando rainbow tables ou força bruta.
+                    Um hash MD5 foi fornecido. Encontre o plaintext original usando rainbow tables ou força bruta.
                 </div>
-                <div class="challenge-time">⏱️ 10 minutos</div>
                 <div class="downloads">
-                    <strong>Arquivos:</strong>
-                    <a href="challenges/hash_md5.txt" class="download-btn" download>📥 hash_md5.txt</a>
+                    <a href="challenges/hash_md5.txt" class="download-btn" download>⬇ hash_md5.txt</a>
+                    <a href="challenges/wordlist_comum.txt" class="download-btn" download>⬇ wordlist_comum.txt</a>
                 </div>
-                <div class="commands">
-$ hashcat -m 0 hashes.txt rockyou.txt
-                </div>
+                <div class="commands"><span class="c-prompt">$</span> john --format=raw-md5 hash_md5.txt --wordlist=wordlist_comum.txt
+<span class="c-prompt">$</span> # 100% offline, sem internet</div>
+                <form class="flag-form" data-flag-form>
+                    <input type="text" class="flag-input" placeholder="FLAG{...}" autocomplete="off" spellcheck="false">
+                    <button type="submit" class="flag-submit">Enviar</button>
+                </form>
+                <div class="flag-feedback"></div>
             </div>
 
-            <!-- MEDIUM CHALLENGE -->
-            <div class="challenge medium">
+            <!-- MEDIUM -->
+            <div class="challenge medium" data-id="d2">
                 <div class="challenge-header">
-                    <span class="difficulty medium">Medium</span>
-                    <h3>Desafio 2: SHA-256 + Salt</h3>
+                    <div class="challenge-title">
+                        <span class="lock-icon">🔒</span>
+                        <h3>Desafio 2 — SHA-256 + Salt</h3>
+                    </div>
+                    <div class="badge-row">
+                        <span class="difficulty">Medium</span>
+                        <span class="points">100 pts</span>
+                    </div>
                 </div>
-                <div class="challenge-type">Tipo: Hash com salt</div>
+                <div class="challenge-type">Hash com salt</div>
                 <div class="challenge-description">
-                    Hash SHA-256 com salt. Seu desafio: quebrar usando força bruta contra um dicionário de senhas comuns.
+                    Hash SHA-256 com salt conhecido. Quebre com força bruta contra uma wordlist de senhas comuns.
                 </div>
-                <div class="challenge-time">⏱️ 10 minutos</div>
                 <div class="downloads">
-                    <strong>Arquivos:</strong>
-                    <a href="challenges/hash_sha256_salt.txt" class="download-btn" download>📥 hash_sha256_salt.txt</a>
+                    <a href="challenges/hash_sha256_salt.txt" class="download-btn" download>⬇ hash_sha256_salt.txt</a>
+                    <a href="challenges/wordlist_comum.txt" class="download-btn" download>⬇ wordlist_comum.txt</a>
                 </div>
-                <div class="commands">
-$ cat hash_sha256_salt.txt
-$ echo -n "abc123xyzsenha1" | sha256sum
-                </div>
+                <div class="commands"><span class="c-prompt">$</span> HASH_ALVO="&lt;cole o hash do arquivo&gt;"
+for w in $(cat wordlist_comum.txt); do
+  [ "$(echo -n "abc123xyz$w" | sha256sum | cut -d' ' -f1)" = "$HASH_ALVO" ] && echo "ACHOU: $w"
+done</div>
+                <form class="flag-form" data-flag-form>
+                    <input type="text" class="flag-input" placeholder="FLAG{...}" autocomplete="off" spellcheck="false">
+                    <button type="submit" class="flag-submit">Enviar</button>
+                </form>
+                <div class="flag-feedback"></div>
             </div>
 
-            <!-- HARD CHALLENGE -->
-            <div class="challenge hard">
+            <!-- HARD -->
+            <div class="challenge hard" data-id="d3">
                 <div class="challenge-header">
-                    <span class="difficulty hard">Hard</span>
-                    <h3>Desafio 3: AES-256-CBC</h3>
+                    <div class="challenge-title">
+                        <span class="lock-icon">🔒</span>
+                        <h3>Desafio 3 — AES-256-CBC</h3>
+                    </div>
+                    <div class="badge-row">
+                        <span class="difficulty">Hard</span>
+                        <span class="points">150 pts</span>
+                    </div>
                 </div>
-                <div class="challenge-type">Tipo: Criptografia Simétrica</div>
+                <div class="challenge-type">Criptografia simétrica</div>
                 <div class="challenge-description">
-                    Arquivo binário encriptado com AES-256-CBC. Seu desafio: descriptografar usando OpenSSL com a chave correta.
+                    Arquivo binário encriptado com AES-256-CBC. A senha é o nome da instituição + o ano do curso, tudo minúsculo e sem espaço.
                 </div>
-                <div class="challenge-time">⏱️ 15 minutos</div>
                 <div class="downloads">
-                    <strong>Arquivos:</strong>
-                    <a href="challenges/criptografado.bin" class="download-btn" download>📥 criptografado.bin</a>
+                    <a href="challenges/criptografado.bin" class="download-btn" download>⬇ criptografado.bin</a>
                 </div>
-                <div class="commands">
-$ openssl enc -aes-256-cbc -d -in criptografado.bin \
-  -K $(echo -n "chave_32_bytes" | xxd -p) -iv 0
-                </div>
+                <div class="commands"><span class="c-prompt">$</span> openssl enc -d -aes-256-cbc -pbkdf2 \
+  -in criptografado.bin -k "&lt;sua_tentativa&gt;"</div>
+                <form class="flag-form" data-flag-form>
+                    <input type="text" class="flag-input" placeholder="FLAG{...}" autocomplete="off" spellcheck="false">
+                    <button type="submit" class="flag-submit">Enviar</button>
+                </form>
+                <div class="flag-feedback"></div>
             </div>
 
-            <!-- EXPERT CHALLENGE -->
-            <div class="challenge expert">
+            <!-- EXPERT -->
+            <div class="challenge expert" data-id="d4">
                 <div class="challenge-header">
-                    <span class="difficulty expert">Expert</span>
-                    <h3>Desafio 4: RSA Pequeno</h3>
+                    <div class="challenge-title">
+                        <span class="lock-icon">🔒</span>
+                        <h3>Desafio 4 — RSA Pequeno</h3>
+                    </div>
+                    <div class="badge-row">
+                        <span class="difficulty">Expert</span>
+                        <span class="points">200 pts</span>
+                    </div>
                 </div>
-                <div class="challenge-type">Tipo: Criptografia Assimétrica</div>
+                <div class="challenge-type">Criptografia assimétrica</div>
                 <div class="challenge-description">
-                    Chave RSA pequena (propositalmente fraca). Seu desafio: fatore N, reconstrua a chave privada e descriptografe.
+                    N pequeno e propositalmente fraco. Fatore N, reconstrua a chave privada d e decifre a mensagem bloco a bloco.
                 </div>
-                <div class="challenge-time">⏱️ 15 minutos</div>
                 <div class="downloads">
-                    <strong>Arquivos:</strong>
-                    <a href="challenges/numeros_rsa.txt" class="download-btn" download>📥 numeros_rsa.txt</a><br>
-                    <a href="challenges/mensagem_encriptada.txt" class="download-btn" download>📥 mensagem_encriptada.txt</a><br>
-                    <a href="challenges/chave_publica.pem" class="download-btn" download>📥 chave_publica.pem</a>
+                    <a href="challenges/numeros_rsa.txt" class="download-btn" download>⬇ numeros_rsa.txt</a>
+                    <a href="challenges/mensagem_encriptada_rsa.txt" class="download-btn" download>⬇ mensagem_encriptada_rsa.txt</a>
+                    <a href="challenges/chave_publica.pem" class="download-btn" download>⬇ chave_publica.pem</a>
                 </div>
-                <div class="commands">
-$ python3 gera_chave_privada.py --N &lt;N&gt; --e 65537
-$ openssl rsautl -decrypt -in msg.txt -inkey priv.pem
-                </div>
+                <div class="commands"><span class="c-prompt">$</span> python3 -c "from sympy import factorint; print(factorint(3233))"
+<span class="c-prompt">$</span> python3 -c "print(pow(325, D, 3233))"  # D = sua chave privada</div>
+                <form class="flag-form" data-flag-form>
+                    <input type="text" class="flag-input" placeholder="FLAG{...}" autocomplete="off" spellcheck="false">
+                    <button type="submit" class="flag-submit">Enviar</button>
+                </form>
+                <div class="flag-feedback"></div>
             </div>
 
-            <!-- MASTER CHALLENGE -->
-            <div class="challenge master">
+            <!-- MASTER (sem flag fixa) -->
+            <div class="challenge master" data-id="d5">
                 <div class="challenge-header">
-                    <span class="difficulty master">Master</span>
-                    <h3>Desafio 5: Sistema Hybrid</h3>
+                    <div class="challenge-title">
+                        <span class="lock-icon">🔓</span>
+                        <h3>Desafio 5 — Sistema Híbrido</h3>
+                    </div>
+                    <div class="badge-row">
+                        <span class="difficulty">Master</span>
+                        <span class="points">bônus</span>
+                    </div>
                 </div>
-                <div class="challenge-type">Tipo: Defesa em Profundidade</div>
+                <div class="challenge-type">Defesa em profundidade — sem flag fixa</div>
                 <div class="challenge-description">
-                    Seu desafio final: criar sistema seguro com 3 camadas (Hash + AES + RSA). Proteja uma mensagem para um colega.
+                    Implemente você mesmo um sistema em camadas (Hash + AES + RSA) e proteja uma mensagem para um colega. Este desafio é autoavaliado.
                 </div>
-                <div class="challenge-time">⏱️ 10 minutos</div>
-                <div class="downloads">
-                    <strong>Objetivo:</strong> Implementar exemplo real de criptografia em camadas, como PGP/TLS
-                </div>
-                <div class="commands">
-$ openssl genrsa -out chave_privada.pem 2048
-$ openssl rand -hex 32 > chave_aes.hex
-$ openssl enc -aes-256-cbc -in msg.txt -out msg.aes -K $(cat chave_aes.hex) -iv 0
+                <div class="commands"><span class="c-prompt">$</span> openssl genrsa -out chave_privada.pem 2048
+<span class="c-prompt">$</span> openssl rand -hex 32 &gt; chave_aes.hex
+<span class="c-prompt">$</span> openssl enc -aes-256-cbc -pbkdf2 -in msg.txt -out msg.aes -k "$(cat chave_aes.hex)"</div>
+                <div class="checklist">
+                    <label><input type="checkbox" data-check> Gerei um par de chaves RSA (2048+ bits)</label>
+                    <label><input type="checkbox" data-check> Encriptei a mensagem com AES-256</label>
+                    <label><input type="checkbox" data-check> Protegi a chave AES com RSA (envelope digital)</label>
+                    <label><input type="checkbox" data-check> Consegui decifrar de volta e recuperar a mensagem original</label>
                 </div>
             </div>
         </div>
 
-        <div class="intro">
-            <h2>🛠️ Ferramentas Disponíveis</h2>
-            <p>
-                Todas as ferramentas já estão instaladas no container:
-            </p>
-            <ul style="margin-left: 20px; margin-top: 10px; line-height: 1.8;">
-                <li><code>openssl</code> — Encriptação, certificados, chaves</li>
-                <li><code>hashcat</code> — Quebra de hashes (GPU-optimized)</li>
-                <li><code>john</code> — Quebra de senhas (CPU-friendly)</li>
-                <li><code>python3 + pycryptodome</code> — Scripts customizados</li>
-                <li><code>gpg</code> — Encriptação PGP</li>
-                <li><code>xxd</code> — Análise hexadecimal</li>
-            </ul>
+        <div class="term">
+            <div class="term-bar">
+                <span class="dot red"></span><span class="dot yellow"></span><span class="dot green"></span>
+                <span class="term-title">ferramentas</span>
+            </div>
+            <div class="term-body">
+                <p style="color: var(--text-dim); margin-bottom: 10px;">Instaladas no container:</p>
+                <ul style="margin-left: 20px; line-height: 1.9;">
+                    <li><code>openssl</code> — encriptação, hashes, certificados</li>
+                    <li><code>john</code> — quebra de senhas/hashes (CPU)</li>
+                    <li><code>python3 + pycryptodome + sympy</code> — scripts customizados e fatoração</li>
+                    <li><code>gpg</code> — criptografia PGP</li>
+                    <li><code>xxd</code> — análise hexadecimal</li>
+                </ul>
+            </div>
         </div>
 
         <footer>
-            <p>🎓 Cripto Lab | FIAP Cybersecurity Hacker Mindset | 2026</p>
-            <p>Desenvolvido para fins educacionais. Use responsavelmente.</p>
+            <p>Cripto Lab · FIAP Cybersecurity Hacker Mindset · 2026</p>
+            <p>Uso educacional. As flags ficam salvas apenas no seu navegador (localStorage).</p>
         </footer>
     </div>
+
+    <script>
+        // SHA-256 hex de cada flag correta — nunca a flag em texto puro,
+        // para não dar cheat trivial via "ver código-fonte".
+        const ANSWERS = {
+            d1: 'd2c89261b61e725b263f6ca082888895b11818af2b6b4326032ef779f951550c',
+            d2: '2db0a21fd7d7567e0822a215d280ba6c51cbf292fa671234a724feadd6f05767',
+            d3: '47b3658d5f44b1af4558eba3f3dfc64a14bbb47d05f7d0ed471919b572730bb3',
+            d4: 'e707ffc046c022fbe57790e7afd84498d85e998eb394446b48781bfba008e4fb',
+        };
+        const POINTS = { d1: 50, d2: 100, d3: 150, d4: 200 };
+        const STORAGE_KEY = 'cripto-lab-progress-v1';
+
+        function loadState() {
+            try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || {}; }
+            catch { return {}; }
+        }
+        function saveState(state) {
+            try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch {}
+        }
+
+        async function sha256Hex(text) {
+            const buf = new TextEncoder().encode(text.trim());
+            const digest = await crypto.subtle.digest('SHA-256', buf);
+            return Array.from(new Uint8Array(digest)).map(b => b.toString(16).padStart(2, '0')).join('');
+        }
+
+        function updateProgress(state) {
+            let solved = 0, points = 0;
+            for (const id of Object.keys(POINTS)) {
+                if (state[id]) { solved++; points += POINTS[id]; }
+            }
+            document.getElementById('score-count').textContent = solved;
+            document.getElementById('points-count').textContent = points;
+            document.getElementById('progress-fill').style.width = (solved / 4 * 100) + '%';
+        }
+
+        function markSolved(card) {
+            card.classList.add('solved');
+            card.querySelector('.lock-icon').textContent = '🔓';
+            const form = card.querySelector('[data-flag-form]');
+            if (form) form.style.display = 'none';
+            let banner = card.querySelector('.solved-banner');
+            if (!banner) {
+                banner = document.createElement('div');
+                banner.className = 'solved-banner';
+                banner.textContent = '✔ Resolvido';
+                card.appendChild(banner);
+            }
+        }
+
+        function init() {
+            const state = loadState();
+            document.querySelectorAll('.challenge[data-id]').forEach(card => {
+                const id = card.dataset.id;
+                if (!ANSWERS[id]) return; // desafio 5 não tem flag fixa
+                if (state[id]) markSolved(card);
+
+                const form = card.querySelector('[data-flag-form]');
+                const feedback = card.querySelector('.flag-feedback');
+                form.addEventListener('submit', async (ev) => {
+                    ev.preventDefault();
+                    const input = form.querySelector('.flag-input');
+                    const value = input.value;
+                    if (!value.trim()) return;
+                    const hash = await sha256Hex(value);
+                    if (hash === ANSWERS[id]) {
+                        feedback.textContent = '✔ Flag correta!';
+                        feedback.className = 'flag-feedback ok';
+                        state[id] = true;
+                        saveState(state);
+                        markSolved(card);
+                        updateProgress(state);
+                    } else {
+                        feedback.textContent = '✘ Flag incorreta, tente novamente.';
+                        feedback.className = 'flag-feedback err';
+                    }
+                });
+            });
+
+            // Checklist do Desafio 5 (persistido, sem flag)
+            const master = document.querySelector('.challenge.master');
+            const checks = master.querySelectorAll('[data-check]');
+            const savedChecks = state.d5checks || [];
+            checks.forEach((cb, i) => {
+                cb.checked = !!savedChecks[i];
+                cb.addEventListener('change', () => {
+                    state.d5checks = Array.from(checks).map(c => c.checked);
+                    saveState(state);
+                    if (state.d5checks.every(Boolean)) markSolved(master);
+                });
+            });
+            if (savedChecks.length && savedChecks.every(Boolean)) markSolved(master);
+
+            updateProgress(state);
+        }
+
+        init();
+    </script>
 </body>
 </html>

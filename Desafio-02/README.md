@@ -10,27 +10,30 @@ Desenvolvido para FIAP — Cybersecurity Hacker Mindset
 
 Servidor Docker com **5 desafios progressivos** de criptografia. Cada um explora uma técnica diferente:
 
-1. **Easy:** Hash MD5 (inseguro) → Usar rainbow tables online
-2. **Medium:** Hash SHA-256 + Salt → Força bruta com hashcat/john
-3. **Hard:** Criptografia Simétrica (AES-256) → Quebra de chave
-4. **Expert:** Criptografia Assimétrica (RSA) → Fatoração de primos
+1. **Easy:** Hash MD5 (inseguro) → Força bruta offline com `john` + wordlist
+2. **Medium:** Hash SHA-256 + Salt → Força bruta offline com script `bash`
+3. **Hard:** Criptografia Simétrica (AES-256) → Descriptografar com `openssl`
+4. **Expert:** Criptografia Assimétrica (RSA) → Fatoração com `sympy`
 5. **Master:** Criar seu próprio sistema de encriptação
+
+**Requisitos:** só Docker. Depois do `docker compose up`, **nenhuma ferramenta externa nem internet são necessários** — tudo (openssl, john, python3+sympy) já vem no container. Docker é necessário porque essas ferramentas não existem nativamente no Windows.
 
 ---
 
 ## 🚀 Quick Start (2 Minutos)
 
 ```bash
-# 1. Rodar Docker
-docker-compose up
+# 1. Rodar Docker (docker compose, com espaço, no Docker moderno)
+docker compose up -d --build
 
 # 2. Abrir navegador
 # http://localhost:8080
 
-# 3. Seguir os desafios na interface web
+# 3. Resolver os desafios e colar a FLAG no campo de cada card
+#    (validação acontece no navegador; progresso fica salvo no localStorage)
 ```
 
-Se Docker não estiver instalado, veja [Desafio-01](../Desafio-01/PARTE0_SETUP.md).
+Se Docker não estiver instalado, baixe o Docker Desktop: https://www.docker.com/products/docker-desktop/
 
 ---
 
@@ -38,28 +41,31 @@ Se Docker não estiver instalado, veja [Desafio-01](../Desafio-01/PARTE0_SETUP.m
 
 ### Acesso Web
 A interface em `http://localhost:8080` mostra:
-- ✅ 5 desafios com descrição
-- ✅ Arquivos para download (hash, encriptado, etc)
-- ✅ Campo para enviar FLAG
-- ✅ Feedback instantâneo (correto/incorreto)
+- ✅ 5 desafios com descrição, dificuldade e pontuação
+- ✅ Arquivos para download (hash, encriptado, wordlist, etc)
+- ✅ Campo de FLAG por desafio, com validação instantânea no navegador
+- ✅ Barra de progresso e pontos, salvos no `localStorage` (persistem entre recargas)
 
 ### Ferramentas Disponíveis
 
-Dentro do container:
+Dentro do container (`docker exec -it cripto-lab sh`):
 
 ```bash
 # Ver ferramentas
-which openssl hashcat john gpg python3
+which openssl john python3
+python3 -c "import sympy; print(sympy.__version__)"
 
 # Usar OpenSSL
-openssl enc -d -aes-256-cbc -in file.enc -p
+openssl enc -d -aes-256-cbc -pbkdf2 -in criptografado.bin -k "senha"
 
-# Usar Hashcat
-hashcat -m 1400 hash.txt wordlist.txt
+# Usar John (hash direto, sem salt)
+john --format=raw-md5 hash_md5.txt --wordlist=wordlist_comum.txt
 
-# Usar John
-john --format=sha256crypt hash.txt
+# Fatorar RSA
+python3 -c "from sympy import factorint; print(factorint(3233))"
 ```
+
+> `hashcat` **não está incluído** (sem pacote para Alpine/musl) — `john` + a wordlist embutida (`wordlist_comum.txt`) cobrem os Desafios 1 e 2 sem precisar de internet.
 
 ---
 
@@ -67,16 +73,17 @@ john --format=sha256crypt hash.txt
 
 ### Desafio 1: Easy — MD5 (10 min)
 
-**Arquivo:** `hash_md5.txt` contém um hash MD5
+**Arquivos:** `hash_md5.txt` (hash MD5) + `wordlist_comum.txt` (wordlist local)
 
 **O que fazer:**
-1. Baixe o arquivo do navegador
-2. Use uma ferramenta online (rainbow table) para quebrar
-3. Envie a resposta (senha original)
+1. Baixe os dois arquivos
+2. Quebre o hash com `john` (offline, sem internet)
+3. Envie `FLAG{<palavra_original>}`
 
-**Ferramentas sugeridas:**
-- https://crackstation.net/ (online)
-- `hashcat -m 0 hash.txt wordlist.txt` (offline)
+**Comando (100% offline):**
+```bash
+john --format=raw-md5 hash_md5.txt --wordlist=wordlist_comum.txt
+```
 
 **Conceito:** MD5 é rápido → fácil de quebrar com força bruta
 
@@ -84,18 +91,19 @@ john --format=sha256crypt hash.txt
 
 ### Desafio 2: Medium — SHA-256 + Salt (10 min)
 
-**Arquivo:** `hash_sha256_salt.txt`
+**Arquivos:** `hash_sha256_salt.txt` + `wordlist_comum.txt`
 
 **O que fazer:**
-1. Identifique: é um hash SHA-256 com salt
-2. Use `john` ou `hashcat` com wordlist
-3. Capture a senha/FLAG
+1. O salt vem no próprio arquivo; o hash é `sha256(salt + senha)`
+2. `john` sozinho não aplica o salt automaticamente — use o loop abaixo
+3. Capture `FLAG{<senha_original>}`
 
-**Comando exemplo:**
+**Comando (100% offline, bash puro):**
 ```bash
-john --format=sha256crypt hash.txt --wordlist=wordlist.txt
-# ou
-hashcat -m 1400 hash.txt wordlist.txt
+HASH_ALVO="<cole o hash do arquivo>"
+for w in $(cat wordlist_comum.txt); do
+  [ "$(echo -n "abc123xyz$w" | sha256sum | cut -d' ' -f1)" = "$HASH_ALVO" ] && echo "ACHOU: $w"
+done
 ```
 
 **Conceito:** Salt dificulta rainbow tables, mas força bruta continua possível
@@ -104,16 +112,16 @@ hashcat -m 1400 hash.txt wordlist.txt
 
 ### Desafio 3: Hard — AES-256 Simétrica (15 min)
 
-**Arquivo:** `mensagem_encriptada.txt` (binário encriptado)
+**Arquivo:** `criptografado.bin` (binário encriptado com AES-256-CBC)
 
 **O que fazer:**
 1. Descriptografe usando OpenSSL
-2. A chave está em... (dica no desafio web)
-3. Extraia a FLAG
+2. A senha é o nome da instituição + o ano do curso, tudo minúsculo e sem espaço (dica no card do desafio)
+3. A flag está no texto decifrado
 
 **Comando:**
 ```bash
-openssl enc -d -aes-256-cbc -in mensagem_encriptada.txt -p -k "chave_aqui" -md sha256
+openssl enc -d -aes-256-cbc -pbkdf2 -in criptografado.bin -k "<sua_tentativa>"
 ```
 
 **Conceito:** Criptografia simétrica = rápida, mas requer chave compartilhada
@@ -122,57 +130,54 @@ openssl enc -d -aes-256-cbc -in mensagem_encriptada.txt -p -k "chave_aqui" -md s
 
 ### Desafio 4: Expert — RSA Assimétrica (15 min)
 
-**Arquivo:** `numeros_rsa.txt` (N e E públicos)
+**Arquivos:** `numeros_rsa.txt` (N e e públicos) + `mensagem_encriptada_rsa.txt` (blocos cifrados) + `chave_publica.pem`
 
 **O que fazer:**
-1. Fatore N (semiprimo)
-2. Calcule D (chave privada)
-3. Descriptografe a mensagem
+1. Fatore N (semiprimo pequeno, propositalmente fraco)
+2. Calcule phi(N) e depois d (chave privada)
+3. Decifre cada bloco com `pow(c, d, N)` e converta com `chr()`
 
-**Ferramentas:**
+**Comando (100% offline, com `sympy`):**
 ```bash
-# Fatorar N
-python3 -c "import factordb; print(factordb.factordb(N).get_factor_list())"
-
-# Ou usar ferramenta online
-# https://www.alpertron.com.ar/ECM.HTM
+python3 -c "from sympy import factorint; print(factorint(3233))"
+python3 -c "
+p, q = 61, 53
+d = pow(65537, -1, (p-1)*(q-1))
+blocks = [int(x) for x in open('mensagem_encriptada_rsa.txt').readlines()[2].strip().split(',')]
+print(''.join(chr(pow(c, d, 3233)) for c in blocks))
+"
 ```
 
 **Conceito:** RSA segurança depende de fatoração ser difícil (N grande)
 
 ---
 
-### Desafio 5: Master — Criar Sistema (10 min)
+### Desafio 5: Master — Sistema Híbrido (10 min)
+
+Sem flag fixa — é autoavaliado por um checklist na própria interface.
 
 **O que fazer:**
-1. Implemente um sistema completo
-2. Use OpenSSL ou pycryptodome
-3. Encripte uma mensagem
-4. Descriptografe e capture FLAG
+1. Gere um par de chaves RSA
+2. Encripte uma mensagem com AES-256
+3. Proteja a chave AES com a chave pública RSA (envelope digital)
+4. Decifre de volta e confirme que recupera a mensagem original
 
-**Script exemplo:**
-```python
-from Crypto.Cipher import AES
-from Crypto.Random import get_random_bytes
-
-key = b'chave_32_bytes_!' * 2  # 32 bytes para AES-256
-cipher = AES.new(key, AES.MODE_EAX)
-ciphertext, tag = cipher.encrypt_and_digest(b'mensagem')
-
-# Descriptografar
-cipher = AES.new(key, AES.MODE_EAX, nonce=cipher.nonce)
-plaintext = cipher.decrypt_and_verify(ciphertext, tag)
+**Comandos:**
+```bash
+openssl genrsa -out chave_privada.pem 2048
+openssl rand -hex 32 > chave_aes.hex
+openssl enc -aes-256-cbc -pbkdf2 -in msg.txt -out msg.aes -k "$(cat chave_aes.hex)"
 ```
 
-**Conceito:** Aplicar toda teoria em implementação prática
+**Conceito:** Defesa em profundidade — combinar hash, simétrica e assimétrica, como PGP/TLS fazem na prática
 
 ---
 
 ## 📊 Cronograma
 
 ```
-Desafio 1 (Easy)    → 10 min  (rainbow tables)
-Desafio 2 (Medium)  → 10 min  (force brute)
+Desafio 1 (Easy)    → 10 min  (john + wordlist)
+Desafio 2 (Medium)  → 10 min  (força bruta com salt)
 Desafio 3 (Hard)    → 15 min  (AES decrypt)
 Desafio 4 (Expert)  → 15 min  (RSA factor)
 Desafio 5 (Master)  → 10 min  (implement)
@@ -194,19 +199,19 @@ TOTAL               → 60 min
 - Procure pela "dica" (geralmente há um)
 - Teste com exemplos pequenos primeiro
 
-### 3. Ferramentas Offline
+### 3. Ferramentas Offline (nenhuma precisa de internet)
 ```bash
-# Dentro do container (docker exec)
-docker exec cripto-lab bash
+# Dentro do container
+docker exec -it cripto-lab sh
 
-# Agora você tem:
-openssl, hashcat, john, gpg, python3 com pycryptodome
+# Disponível:
+openssl, john, python3 (pycryptodome + sympy), gpg
 ```
 
 ### 4. Documentação
 - OpenSSL: `man openssl`
-- Hashcat: `hashcat -h`
 - John: `john --help`
+- sympy: https://docs.sympy.org/latest/modules/ntheory.html
 
 ---
 
@@ -214,10 +219,11 @@ openssl, hashcat, john, gpg, python3 com pycryptodome
 
 | Problema | Solução |
 |----------|---------|
-| Port 8080 ocupada | `docker-compose -p 8081:80 up` (muda para 8081) |
-| Página não carrega | Aguarde 10 segundos, recarregue (nginx init) |
-| Docker não encontra arquivo | Verifique `challenges/` tem os arquivos |
-| Ferramentas não encontradas | Entre no container: `docker exec -it cripto-lab bash` |
+| Build falha | Rode `docker compose up -d --build` (não `docker-compose`, deprecado nas versões novas do Docker Desktop) |
+| Port 8080 ocupada | Outro processo (às vezes um `python -m http.server` esquecido) pode já estar usando a porta — confira com `netstat`/`ss` antes de mudar a porta |
+| Página não carrega | Aguarde alguns segundos e recarregue |
+| Docker não encontra arquivo | Verifique se `challenges/` tem os arquivos (rode `python3 gera_desafios.py` dentro de `challenges/` se estiverem faltando) |
+| Ferramentas não encontradas | Entre no container: `docker exec -it cripto-lab sh` |
 
 ---
 
@@ -225,16 +231,21 @@ openssl, hashcat, john, gpg, python3 com pycryptodome
 
 ```
 Desafio-02/
-├── Dockerfile          (imagem com ferramentas)
+├── Dockerfile          (imagem com ferramentas: nginx, openssl, john, python3+sympy+pycryptodome, gpg)
 ├── docker-compose.yml  (orquestração)
-├── index.html          (interface web)
-├── nginx.conf          (configuração servidor)
-├── challenges/         (desafios)
+├── .dockerignore       (nunca publica gera_desafios.py nem RESPOSTAS.md)
+├── index.html          (interface web — tema CTF, flags validadas no navegador)
+├── nginx.conf          (configuração do servidor; bloqueia gabarito e gerador)
+├── challenges/
+│   ├── gera_desafios.py          (gerador — não versionado, roda local)
 │   ├── hash_md5.txt
 │   ├── hash_sha256_salt.txt
-│   ├── mensagem_encriptada.txt
+│   ├── wordlist_comum.txt
+│   ├── criptografado.bin
 │   ├── numeros_rsa.txt
-│   └── ...
+│   ├── mensagem_encriptada_rsa.txt
+│   ├── chave_publica.pem
+│   └── README.md
 └── README.md           (este arquivo)
 ```
 
@@ -253,12 +264,13 @@ Desafio-02/
 
 ## 🔔 Após Completar
 
-- [ ] Capturou todas as 5 FLAGS?
+- [ ] Capturou as 4 FLAGS (Desafios 1-4)?
+- [ ] Completou o checklist do Desafio 5 (sistema híbrido)?
 - [ ] Entende diferenças entre os 3 mecanismos?
 - [ ] Consegue explicar cada ataque?
 - [ ] Sabe quando usar qual técnica?
 
-**Próximo passo:** Revisar [Desafio-01](../Desafio-01/) para aprofundar teoria
+**Próximo passo:** Discutir em grupo como cada ataque poderia ser mitigado em produção
 
 ---
 

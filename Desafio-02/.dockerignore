@@ -1,0 +1,4 @@
+# Nunca publicar o gabarito nem o gerador dentro da imagem/servidor web
+challenges/RESPOSTAS.md
+challenges/gera_desafios.py
+challenges/gera_*.py

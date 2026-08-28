@@ -2,7 +2,10 @@
 DESAFIO 1: Hash MD5 (Easy)
 ===============================================
 
-Hash MD5 para quebre:
+Hash MD5 para quebrar:
 5d41402abc4b2a76b9719d911017c592
 
-Use hashcat ou rainbow tables online!
+100% offline — sem precisar de internet:
+  john --format=raw-md5 hash_md5.txt --wordlist=wordlist_comum.txt
+
+A flag e FLAG{<palavra_original>}

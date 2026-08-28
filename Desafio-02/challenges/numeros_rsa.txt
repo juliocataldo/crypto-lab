@@ -2,13 +2,19 @@
 DESAFIO 4: RSA Pequeno (Expert)
 ===============================================
 
-Parâmetros RSA:
+Parametros publicos RSA:
 N = 3233
 e = 65537
 
-Seu desafio: Fatore N em p*q!
+Seu desafio:
+1. Fatore N em p*q (N = 3233 tem fatores pequenos; tente ate sqrt(N) ~= 57)
+2. Calcule phi(N) = (p-1)*(q-1)
+3. Calcule d = inverso modular de e mod phi(N)
+4. Use d para decifrar cada bloco em mensagem_encriptada_rsa.txt:
+   m = pow(c, d, N) -> chr(m)
 
-Dica: N = p * q, onde p e q são primos pequenos
-Tente divisores até √3233 ≈ 57
+Exemplo em Python:
+  from sympy import factorint
+  print(factorint(3233))
 
-Use o script: python3 gera_chave_privada.py --N 3233 --e 65537 --p <p> --q <q>
+A flag e o texto decifrado (formato FLAG{...})
