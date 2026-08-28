@@ -252,6 +252,22 @@
 
         .commands .c-prompt { color: var(--accent); }
 
+        .tip {
+            display: flex;
+            gap: 8px;
+            background: rgba(255, 204, 77, 0.08);
+            border: 1px solid rgba(255, 204, 77, 0.35);
+            border-radius: 4px;
+            padding: 8px 10px;
+            margin-bottom: 14px;
+            font-size: 0.78em;
+            color: var(--text);
+            line-height: 1.5;
+        }
+
+        .tip .tip-icon { flex-shrink: 0; }
+        .tip code { font-size: 0.95em; }
+
         .flag-form {
             display: flex;
             gap: 8px;
@@ -382,6 +398,10 @@
                 </div>
                 <div class="commands"><span class="c-prompt">$</span> john --format=raw-md5 hash_md5.txt --wordlist=wordlist_comum.txt
 <span class="c-prompt">$</span> # 100% offline, sem internet</div>
+                <div class="tip">
+                    <span class="tip-icon">💡</span>
+                    <span>Se aparecer <code>No password hashes left to crack</code>, não é erro — o <code>john</code> guarda um cache (<code>~/.john/john.pot</code>) e esse hash já foi quebrado antes. Veja a senha com <code>john --show --format=raw-md5 hash_md5.txt</code>, ou apague o cache (<code>rm -f ~/.john/john.pot</code>) pra rodar a quebra do zero.</span>
+                </div>
                 <form class="flag-form" data-flag-form>
                     <input type="text" class="flag-input" placeholder="FLAG{...}" autocomplete="off" spellcheck="false">
                     <button type="submit" class="flag-submit">Enviar</button>
@@ -413,6 +433,10 @@
 for w in $(cat wordlist_comum.txt); do
   [ "$(echo -n "abc123xyz$w" | sha256sum | cut -d' ' -f1)" = "$HASH_ALVO" ] && echo "ACHOU: $w"
 done</div>
+                <div class="tip">
+                    <span class="tip-icon">💡</span>
+                    <span>O loop roda em menos de 1 segundo e <strong>não imprime nada se não achar</strong> — silêncio não é erro, é só continuar esperando ele terminar. Se terminar sem achar, confira se copiou o hash completo (64 caracteres) sem espaços ou quebras de linha extras.</span>
+                </div>
                 <form class="flag-form" data-flag-form>
                     <input type="text" class="flag-input" placeholder="FLAG{...}" autocomplete="off" spellcheck="false">
                     <button type="submit" class="flag-submit">Enviar</button>
@@ -441,6 +465,10 @@ done</div>
                 </div>
                 <div class="commands"><span class="c-prompt">$</span> openssl enc -d -aes-256-cbc -pbkdf2 \
   -in criptografado.bin -k "&lt;sua_tentativa&gt;"</div>
+                <div class="tip">
+                    <span class="tip-icon">💡</span>
+                    <span>Erro <code>bad decrypt</code>? É quase sempre <strong>senha errada</strong>, não arquivo corrompido — o <code>-pbkdf2</code> detecta isso de forma confiável. Revise o formato da dica: minúsculo, sem espaço, instituição colada ao ano.</span>
+                </div>
                 <form class="flag-form" data-flag-form>
                     <input type="text" class="flag-input" placeholder="FLAG{...}" autocomplete="off" spellcheck="false">
                     <button type="submit" class="flag-submit">Enviar</button>
@@ -471,6 +499,10 @@ done</div>
                 </div>
                 <div class="commands"><span class="c-prompt">$</span> python3 -c "from sympy import factorint; print(factorint(3233))"
 <span class="c-prompt">$</span> python3 -c "print(pow(325, D, 3233))"  # D = sua chave privada</div>
+                <div class="tip">
+                    <span class="tip-icon">💡</span>
+                    <span><code>factorint(3233)</code> devolve um dicionário tipo <code>{53: 1, 61: 1}</code> — as <strong>chaves</strong> desse dicionário são p e q, não os valores. E os blocos cifrados estão na 3ª linha de <code>mensagem_encriptada_rsa.txt</code>, separados por vírgula (ignore o texto explicativo acima deles).</span>
+                </div>
                 <form class="flag-form" data-flag-form>
                     <input type="text" class="flag-input" placeholder="FLAG{...}" autocomplete="off" spellcheck="false">
                     <button type="submit" class="flag-submit">Enviar</button>
@@ -497,6 +529,10 @@ done</div>
                 <div class="commands"><span class="c-prompt">$</span> openssl genrsa -out chave_privada.pem 2048
 <span class="c-prompt">$</span> openssl rand -hex 32 &gt; chave_aes.hex
 <span class="c-prompt">$</span> openssl enc -aes-256-cbc -pbkdf2 -in msg.txt -out msg.aes -k "$(cat chave_aes.hex)"</div>
+                <div class="tip">
+                    <span class="tip-icon">💡</span>
+                    <span>RSA só consegue encriptar dados <strong>menores que o tamanho da chave</strong> — por isso você encripta a chave AES (32 bytes) com RSA, e não a mensagem inteira. É exatamente assim que TLS e PGP resolvem esse limite na prática.</span>
+                </div>
                 <div class="checklist">
                     <label><input type="checkbox" data-check> Gerei um par de chaves RSA (2048+ bits)</label>
                     <label><input type="checkbox" data-check> Encriptei a mensagem com AES-256</label>

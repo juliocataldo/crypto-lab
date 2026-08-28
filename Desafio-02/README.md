@@ -85,6 +85,8 @@ python3 -c "from sympy import factorint; print(factorint(3233))"
 john --format=raw-md5 hash_md5.txt --wordlist=wordlist_comum.txt
 ```
 
+> 💡 **Dica:** se aparecer `No password hashes left to crack`, não é erro — o `john` guarda um cache (`~/.john/john.pot`) e esse hash já foi quebrado antes (por você ou por outra pessoa nesse mesmo container). Veja a senha já encontrada com `john --show --format=raw-md5 hash_md5.txt`, ou apague o cache (`rm -f ~/.john/john.pot`) pra rodar a quebra do zero.
+
 **Conceito:** MD5 é rápido → fácil de quebrar com força bruta
 
 ---
@@ -106,6 +108,8 @@ for w in $(cat wordlist_comum.txt); do
 done
 ```
 
+> 💡 **Dica:** o loop roda em menos de 1 segundo e **não imprime nada se não achar** — silêncio não é erro. Se terminar sem achar, confira se copiou o hash completo (64 caracteres), sem espaços ou quebras de linha extras.
+
 **Conceito:** Salt dificulta rainbow tables, mas força bruta continua possível
 
 ---
@@ -123,6 +127,8 @@ done
 ```bash
 openssl enc -d -aes-256-cbc -pbkdf2 -in criptografado.bin -k "<sua_tentativa>"
 ```
+
+> 💡 **Dica:** erro `bad decrypt`? É quase sempre **senha errada**, não arquivo corrompido — o `-pbkdf2` detecta isso de forma confiável. Revise o formato: minúsculo, sem espaço, instituição colada ao ano.
 
 **Conceito:** Criptografia simétrica = rápida, mas requer chave compartilhada
 
@@ -148,6 +154,8 @@ print(''.join(chr(pow(c, d, 3233)) for c in blocks))
 "
 ```
 
+> 💡 **Dica:** `factorint(3233)` devolve um dicionário tipo `{53: 1, 61: 1}` — as **chaves** desse dicionário são p e q, não os valores. Os blocos cifrados estão na 3ª linha de `mensagem_encriptada_rsa.txt`, separados por vírgula (ignore o texto explicativo acima deles).
+
 **Conceito:** RSA segurança depende de fatoração ser difícil (N grande)
 
 ---
@@ -168,6 +176,8 @@ openssl genrsa -out chave_privada.pem 2048
 openssl rand -hex 32 > chave_aes.hex
 openssl enc -aes-256-cbc -pbkdf2 -in msg.txt -out msg.aes -k "$(cat chave_aes.hex)"
 ```
+
+> 💡 **Dica:** RSA só consegue encriptar dados **menores que o tamanho da chave** — por isso você encripta a chave AES (32 bytes) com RSA, e não a mensagem inteira. É exatamente assim que TLS e PGP resolvem esse limite na prática.
 
 **Conceito:** Defesa em profundidade — combinar hash, simétrica e assimétrica, como PGP/TLS fazem na prática
 
