@@ -18,7 +18,7 @@ Isso irá (re)gerar, com valores reais e verificados:
 - `mensagem_encriptada_rsa.txt` — Mensagem cifrada bloco-a-bloco com RSA
 - `chave_publica.pem` — Chave pública RSA (SubjectPublicKeyInfo/DER)
 - `wordlist_comum.txt` — Wordlist local para os Desafios 1 e 2 (100% offline, sem internet)
-- `RESPOSTAS.md` — Gabarito para o instrutor (gitignored, não é publicado)
+- `RESPOSTAS.md` — Gabarito de uso interno (gitignored, não é publicado)
 
 O script (`gera_desafios.py`) também é ignorado pelo git (`gera_*.py` no `.gitignore`) — fica só na máquina de quem monta o lab.
 

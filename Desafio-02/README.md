@@ -197,34 +197,6 @@ TOTAL               → 60 min
 
 ---
 
-## 💡 Dicas de Sucesso
-
-### 1. Primeira Vez?
-- Comece com Desafio 1 (muito fácil)
-- Progresso natural até Desafio 5
-- Use dicas da interface web
-
-### 2. Stuck?
-- Releia o enunciado do desafio
-- Procure pela "dica" (geralmente há um)
-- Teste com exemplos pequenos primeiro
-
-### 3. Ferramentas Offline (nenhuma precisa de internet)
-```bash
-# Dentro do container
-docker exec -it cripto-lab sh
-
-# Disponível:
-openssl, john, python3 (pycryptodome + sympy), gpg
-```
-
-### 4. Documentação
-- OpenSSL: `man openssl`
-- John: `john --help`
-- sympy: https://docs.sympy.org/latest/modules/ntheory.html
-
----
-
 ## 🚨 Troubleshooting
 
 | Problema | Solução |
