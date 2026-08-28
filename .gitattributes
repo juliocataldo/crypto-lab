@@ -1,0 +1,7 @@
+# Este repo roda dentro de um container Linux (Docker). Force LF em tudo que
+# for texto, independente do core.autocrlf de quem clonar (esp. Windows) —
+# CRLF quebra scripts de shell e comparação de hash em tempo de execução.
+* text=auto eol=lf
+
+# Binário de verdade — nunca tocar em quebra de linha.
+*.bin binary
