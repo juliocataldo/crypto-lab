@@ -40,6 +40,7 @@ docker compose up -d --build
 - **docker-compose.yml** — Orquestração
 - **challenges/** — Arquivos dos desafios (gerados por `gera_desafios.py`)
 - **index.html** — Interface web (tema CTF, flags validadas no navegador)
+- **COMANDOS.md** — Dicionário rápido de comandos (docker, ferramentas, paths dentro do container)
 
 > Requer só Docker — depois do build, os 5 desafios rodam 100% offline (sem internet). Docker é necessário porque as ferramentas (openssl, john, sympy) não existem nativamente no Windows.
 

@@ -35,6 +35,8 @@ docker compose up -d --build
 
 Se Docker não estiver instalado, baixe o Docker Desktop: https://www.docker.com/products/docker-desktop/
 
+> 📎 Cola no terminal e esquece comandos? Veja o [COMANDOS.md](COMANDOS.md) — dicionário rápido com `docker exec`, paths dentro do container e os comandos de cada desafio.
+
 ---
 
 ## 🎯 Como Funciona
@@ -218,6 +220,7 @@ Desafio-02/
 ├── .dockerignore       (nunca publica gera_desafios.py nem RESPOSTAS.md)
 ├── index.html          (interface web — tema CTF, flags validadas no navegador)
 ├── nginx.conf          (configuração do servidor; bloqueia gabarito e gerador)
+├── COMANDOS.md         (dicionário rápido de comandos)
 ├── challenges/
 │   ├── gera_desafios.py          (gerador — não versionado, roda local)
 │   ├── hash_md5.txt
