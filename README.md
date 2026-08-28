@@ -29,7 +29,8 @@ Bem-vindo! Laboratório prático de criptografia moderna: funções de hash, cri
 ### 🚀 Como Começar
 
 ```bash
-cd Desafio-02/
+git clone https://github.com/juliocataldo/crypto-lab.git
+cd crypto-lab/Desafio-02
 docker compose up -d --build
 # Abra navegador: http://localhost:8080
 ```
@@ -113,7 +114,8 @@ MIT — Desenvolvido para FIAP — Cybersecurity Hacker Mindset | 2026
 ## 📞 Começar Agora!
 
 ```bash
-cd Desafio-02/
+git clone https://github.com/juliocataldo/crypto-lab.git
+cd crypto-lab/Desafio-02
 cat README.md
 docker compose up -d --build
 ```

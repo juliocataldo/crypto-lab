@@ -23,13 +23,17 @@ Servidor Docker com **5 desafios progressivos** de criptografia. Cada um explora
 ## 🚀 Quick Start (2 Minutos)
 
 ```bash
-# 1. Rodar Docker (docker compose, com espaço, no Docker moderno)
+# 1. Clonar o repositório (pule se já estiver com o repo localmente)
+git clone https://github.com/juliocataldo/crypto-lab.git
+cd crypto-lab/Desafio-02
+
+# 2. Rodar Docker (docker compose, com espaço, no Docker moderno)
 docker compose up -d --build
 
-# 2. Abrir navegador
+# 3. Abrir navegador
 # http://localhost:8080
 
-# 3. Resolver os desafios e colar a FLAG no campo de cada card
+# 4. Resolver os desafios e colar a FLAG no campo de cada card
 #    (validação acontece no navegador; progresso fica salvo no localStorage)
 ```
 
